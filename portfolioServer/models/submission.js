@@ -1,32 +1,36 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const favoriteSchema = new Schema(
+const submissionSchema = new Schema(
   {
-    name: {
+    type: {
       type: String,
       required: true,
-      unique: true,
     },
     date: {
       type: Date,
       required: true,
     },
-    time: {
+    time1: {
       type: String,
       required: true,
     },
-    fragment: {
+    time2: {
       type: String,
       required: true,
+    },
+    title: {
+      type: String,
+      required: true,
+      unique: true,
     },
     url: {
       type: String,
       required: true,
     },
-    featured: {
-      type: Boolean,
-      default: true,
+    email: {
+      type: String,
+      required: true,
     },
   },
   {
@@ -34,6 +38,6 @@ const favoriteSchema = new Schema(
   }
 );
 
-const Favorite = mongoose.model("Favorite", favoriteSchema);
+const Submission = mongoose.model("Submission", submissionSchema);
 
-module.exports = Favorite;
+module.exports = Submission;

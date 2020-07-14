@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const favoriteSchema = new Schema(
+const musicSchema = new Schema(
   {
     name: {
       type: String,
       required: true,
       unique: true,
+    },
+    image: {
+      type: String,
+      required: true,
     },
     date: {
       type: Date,
@@ -26,7 +30,7 @@ const favoriteSchema = new Schema(
     },
     featured: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   {
@@ -34,6 +38,6 @@ const favoriteSchema = new Schema(
   }
 );
 
-const Favorite = mongoose.model("Favorite", favoriteSchema);
+const Music = mongoose.model("Music", musicSchema);
 
-module.exports = Favorite;
+module.exports = Music;
