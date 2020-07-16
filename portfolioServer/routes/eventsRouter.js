@@ -35,8 +35,8 @@ eventsRouter
     res.end("DELETE operation not supported on /events");
   });
 
-eventsRouter.route("/:art");
-get((req, res, next) => {
+eventsRouter.route("/:art")
+.get((req, res, next) => {
   Art.find()
     .then((arts) => {
       res.statusCode = 200;
@@ -96,8 +96,8 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:music");
-get((req, res, next) => {
+eventsRouter.route("/:music")
+.get((req, res, next) => {
   Music.find()
     .then((music) => {
       res.statusCode = 200;
@@ -159,8 +159,8 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:sport");
-get((req, res, next) => {
+eventsRouter.route("/:sport")
+.get((req, res, next) => {
   Sport.find()
     .then((sports) => {
       res.statusCode = 200;
@@ -222,8 +222,8 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:volunteer");
-get((req, res, next) => {
+eventsRouter.route("/:volunteer")
+.get((req, res, next) => {
   Volunteer.find()
     .then((volunteer) => {
       res.statusCode = 200;

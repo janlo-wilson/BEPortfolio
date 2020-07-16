@@ -8,7 +8,7 @@ const favoritesRouter = express.Router();
 favoritesRouter.use(bodyParser.json());
 
 favoritesRouter.route('/')
-get((req, res, next) => {
+.get((req, res, next) => {
     Favorite.find()
         .then(favorites => {
             res.statusCode = 200;
