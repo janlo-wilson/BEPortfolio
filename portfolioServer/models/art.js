@@ -32,6 +32,10 @@ const artSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    eventType:{
+      type:String,
+      default:"Arts",
+    },
   },
   {
     timestamps: true,

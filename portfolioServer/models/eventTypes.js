@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const sportSchema = new Schema(
+const eventTypeSchema = new Schema(
   {
     name: {
       type: String,
@@ -10,11 +10,11 @@ const sportSchema = new Schema(
     },
     image: {
       type: String,
-      required: true,
+      required: false,
     },
     date: {
       type: Date,
-      required: true,
+      required: false,
     },
     time: {
       type: String,
@@ -32,12 +32,16 @@ const sportSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    eventType: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const Sport = mongoose.model("sports", sportSchema);
+const EventType = mongoose.model("events", eventTypeSchema);
 
-module.exports = Sport;
+module.exports = EventType;

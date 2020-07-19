@@ -6,6 +6,7 @@ const Music = require("../models/music");
 const Sport = require("../models/sport");
 const Volunteer = require("../models/volunteer");
 const { response } = require("express");
+const EventType = require("../models/eventTypes");
 
 const eventsRouter = express.Router();
 
@@ -35,10 +36,13 @@ eventsRouter
     res.end("DELETE operation not supported on /events");
   });
 
-eventsRouter.route("/:art")
+eventsRouter.route("/arts")
 .get((req, res, next) => {
-  Art.find()
-    .then((arts) => {
+  console.log("das arts");
+  EventType.find()
+    .then((events) => {
+      let arts = events.filter(function(x) {
+        return x.eventType == "Arts"});
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
       res.json(arts);
@@ -57,7 +61,7 @@ eventsRouter.route("/:art")
   });
 
 eventsRouter
-  .route("/:art/:artId")
+  .route("/arts/artId")
   .get((req, res, next) => {
     Art.findById(req.params.artId)
       .then((event) => {
@@ -74,17 +78,40 @@ eventsRouter
   .put((req, res, next) => {
     Art.findByIdAndUpdate(
       req.params.artId,
-      {
-        $set: req.body,
-      },
-      { new: true }
     )
-      .then((like) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json(like);
+      .then((event) => {
+        if(authorized)
+        {
+          if (!event) {
+            err = new Error(`${req.params.artId} not found`);
+            err.status = 404;
+            return next(err);
+          } 
+          if (req.body.artId == null) {
+            err = new Error(`${req.body.artId} not found`);
+            err.status = 404;
+            return next(err);
+          }
+        }
+        else if (event && event.artId == req.body.artId) {
+          event.artId.featured = req.body.artId.featured;
+        
+          event
+            .save()
+            .then((event) => {
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              res.json(event);
+            })
+            .catch((err) => next(err));
+        }
+        else if(!authorized){
+          err = new Error("You are not authorized to perform that function!");
+          err.status = 403;
+          return next(err);
+        }
       })
-      .catch((err) => next(err));
+    .catch((err) => next(err));
   })
   .delete((req, res, next) => {
     Art.findByIdAndDelete(req.params.artId)
@@ -96,16 +123,19 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:music")
-.get((req, res, next) => {
-  Music.find()
-    .then((music) => {
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      res.json(music);
-    })
-    .catch((err) => next(err));
-})
+  eventsRouter.route("/music")
+  .get((req, res, next) => {
+    console.log("das music");
+    EventType.find()
+      .then((events) => {
+        let music = events.filter(function(x) {
+          return x.eventType == "Music"});
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(music);
+      })
+      .catch((err) => next(err));
+  })
   .post((req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/music");
@@ -118,7 +148,7 @@ eventsRouter.route("/:music")
   });
 
 eventsRouter
-  .route("/:music/:musicId")
+  .route("/music/:musicId")
   .get((req, res, next) => {
     Music.findById(req.params.musicId)
       .then((event) => {
@@ -159,16 +189,19 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:sport")
-.get((req, res, next) => {
-  Sport.find()
-    .then((sports) => {
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      res.json(sports);
-    })
-    .catch((err) => next(err));
-})
+  eventsRouter.route("/sports")
+  .get((req, res, next) => {
+    console.log("das sports");
+    EventType.find()
+      .then((events) => {
+        let sports = events.filter(function(x) {
+          return x.eventType == "Sports"});
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(sports);
+      })
+      .catch((err) => next(err));
+  })
   .post((req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/sport");
@@ -181,7 +214,7 @@ eventsRouter.route("/:sport")
   });
 
 eventsRouter
-  .route("/:sport/:sportId")
+  .route("/sports/:sportId")
   .get((req, res, next) => {
     Sport.findById(req.params.sportId)
       .then((event) => {
@@ -222,16 +255,18 @@ eventsRouter
       .catch((err) => next(err));
   });
 
-eventsRouter.route("/:volunteer")
-.get((req, res, next) => {
-  Volunteer.find()
-    .then((volunteer) => {
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      res.json(volunteer);
-    })
-    .catch((err) => next(err));
-})
+  eventsRouter.route("/volunteer")
+  .get((req, res, next) => {
+    EventType.find()
+      .then((events) => {
+        let volunteer = events.filter(function(x) {
+          return x.eventType == "Volunteer"});
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(volunteer);
+      })
+      .catch((err) => next(err));
+  })
   .post((req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/volunteer");
@@ -244,7 +279,7 @@ eventsRouter.route("/:volunteer")
   });
 
 eventsRouter
-  .route("/:volunteer/:volunteerId")
+  .route("/volunteer/:volunteerId")
   .get((req, res, next) => {
     Volunteer.findById(req.params.volunteerId)
       .then((event) => {

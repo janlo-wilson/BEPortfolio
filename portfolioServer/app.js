@@ -53,6 +53,7 @@ app.use(passport.session());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/events', eventsRouter);
 
 function auth(req, res, next) {
   console.log(req.user);
@@ -70,7 +71,7 @@ app.use(auth);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/events', eventsRouter);
+
 app.use('/favorites', favoritesRouter);
 app.use('/submission', submissionRouter);
 
