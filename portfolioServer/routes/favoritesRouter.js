@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const Favorite = require('../models/favorites');
 const { response } = require('express');
+const authenticate = require('../authenticate');
 
 const favoritesRouter = express.Router();
 
@@ -17,15 +18,15 @@ favoritesRouter.route('/')
         })
         .catch(err => next(err));
 })
-.post((req, res) => {
+.post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /favorites');
 })
-.put((req, res) => {
+.put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /favorites');
 })
-.delete((req, res) => {
+.delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end('DELETE operation not supported on /favorites');
 });

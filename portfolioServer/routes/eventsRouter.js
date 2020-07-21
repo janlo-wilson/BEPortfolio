@@ -7,6 +7,7 @@ const Sport = require("../models/sport");
 const Volunteer = require("../models/volunteer");
 const { response } = require("express");
 const EventType = require("../models/eventTypes");
+const authenticate = require('../authenticate');
 
 const eventsRouter = express.Router();
 
@@ -23,15 +24,15 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /events");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("DELETE operation not supported on /events");
   });
@@ -49,19 +50,19 @@ eventsRouter.route("/arts")
     })
     .catch((err) => next(err));
 })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/arts");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("PUT operation not supported on /events/arts");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("DELETE operation not supported on /events/arts");
   });
 
 eventsRouter
-  .route("/arts/artId")
+  .route("/arts/:artId")
   .get((req, res, next) => {
     Art.findById(req.params.artId)
       .then((event) => {
@@ -75,7 +76,7 @@ eventsRouter
     res.statusCode = 403;
     res.end(`POST operation not supported on /events/arts/${req.params.artId}`);
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Art.findByIdAndUpdate(
       req.params.artId,
     )
@@ -136,14 +137,14 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/music");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("PUT operation not supported on /events/music");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("DELETE operation not supported on /events/music");
   });
 
@@ -164,7 +165,7 @@ eventsRouter
       `POST operation not supported on /events/music/${req.params.musicId}`
     );
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Music.findByIdAndUpdate(
       req.params.musicId,
       {
@@ -202,14 +203,14 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/sport");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("PUT operation not supported on /events/sport");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("DELETE operation not supported on /events/sport");
   });
 
@@ -230,7 +231,7 @@ eventsRouter
       `POST operation not supported on /events/sport/${req.params.sportId}`
     );
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Sport.findByIdAndUpdate(
       req.params.sportId,
       {
@@ -267,14 +268,14 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post((req, res) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /events/volunteer");
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("PUT operation not supported on /events/volunteer");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.end("DELETE operation not supported on /events/volunteer");
   });
 
@@ -295,7 +296,7 @@ eventsRouter
       `POST operation not supported on /events/volunteer/${req.params.volunteerId}`
     );
   })
-  .put((req, res, next) => {
+  .put(authenticate.verifyUser, (req, res, next) => {
     Volunteer.findByIdAndUpdate(
       req.params.volunteerId,
       {

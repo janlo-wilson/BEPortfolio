@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const Submission = require("../models/submission");
 const { response } = require("express");
+const authenticate = require('../authenticate');
 
 const submissionRouter = express.Router();
 
@@ -27,11 +28,11 @@ submissionRouter
       res.json(submission);
     }).catch((err) => next(err));
   })
-  .put((req, res) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /submission");
   })
-  .delete((req, res) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
     res.statusCode = 403;
     res.end("DELETE operation not supported on /submission");
   });
