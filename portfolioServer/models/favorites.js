@@ -28,6 +28,10 @@ const favoriteSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    eventType: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
