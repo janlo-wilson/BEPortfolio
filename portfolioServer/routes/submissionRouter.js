@@ -1,40 +1,9 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const Submission = require("../models/submission");
-const { response } = require("express");
-const authenticate = require('../authenticate');
+var express = require('express');
+var router = express.Router();
 
-const submissionRouter = express.Router();
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('submission', { title: "Submit an Event" });
+});
 
-submissionRouter.use(bodyParser.json());
-
-submissionRouter
-  .route("/")
-  .get((req, res, next) => {
-    Submission.find()
-      .then((submission) => {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.json(submission);
-      })
-      .catch((err) => next(err));
-  })
-  .post((req, res, next) => {
-    Submission.create(req.body);
-    then((submission) => {
-      console.log("Submission Sent", submission);
-      res.statusCode = 200;
-      res.setHeader("Content-Type", "application/json");
-      res.json(submission);
-    }).catch((err) => next(err));
-  })
-  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
-    res.statusCode = 403;
-    res.end("PUT operation not supported on /submission");
-  })
-  .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res) => {
-    res.statusCode = 403;
-    res.end("DELETE operation not supported on /submission");
-  });
-
-module.exports = submissionRouter;
+module.exports = router;

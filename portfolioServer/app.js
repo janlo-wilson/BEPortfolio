@@ -9,7 +9,7 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const eventsRouter = require('./routes/eventsRouter');
 const favoritesRouter = require('./routes/favoritesRouter');
-const submissionRouter = require('./routes/favoritesRouter');
+const submissionRouter = require('./routes/submissionRouter');
 
 const mongoose = require('mongoose');
 
@@ -47,6 +47,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/favorites', favoritesRouter);
 app.use('/submission', submissionRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
