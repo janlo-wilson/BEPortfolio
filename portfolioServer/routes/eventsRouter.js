@@ -131,87 +131,108 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `POST operation not supported on /events/arts/${req.params.artId}`
-      );
-    }
-  )
+  .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    EventType.findByIdAndUpdate(req.params.artId)
+    .then((event) => {
+      if (req.verifyAdmin == true) {
+        if (!event) {
+          err = new Error(`${req.params.artId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+        if (req.body.artId == null) {
+          err = new Error(`${req.body.artId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+      } 
+      else if (event && event.artId == req.body.artId) {
+        if (req.body.name) {
+          event.name = req.body.name;
+        }
+        if (req.body.image) {
+          event.image = req.body.image;
+        }
+        if (req.body.date) {
+          event.date = req.body.date;
+        }
+        if (req.body.time) {
+          event.time = req.body.time;
+        }
+        if (req.body.fragment) {
+          event.fragment = req.body.fragment;
+        }
+        if (req.body.url) {
+          event.url = req.body.url;
+        }
+        if (req.body.featured != null) {
+          event.featured = req.body.featured;
+        }
+        if (req.body.eventType) {
+          event.eventType = req.body.eventType;
+        }
+
+        event
+          .save()
+          .then((event) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(event);
+          })
+          .catch((err) => next(err));
+      }
+    })
+    .catch((err) => next(err));
+})
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     EventType.findByIdAndUpdate(req.params.artId)
-      .then((event) => {
-        if (req.verifyUser == true) {
-          if (!event) {
-            err = new Error(`${req.params.artId} not found`);
-            err.status = 404;
-            return next(err);
-          }
-          if (req.body.artId == null) {
-            err = new Error(`${req.body.artId} not found`);
-            err.status = 404;
-            return next(err);
-          }
-        } else if (event && event.artId == req.body.artId) {
-          event.featured = req.body.featured;
-
-          event
-            .save()
-            .then((event) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json(event);
-            })
-            .catch((err) => next(err));
+    .then((event) => {
+      if (req.verifyUser == true) {
+        if (!event) {
+          err = new Error(`${req.params.artId} not found`);
+          err.status = 404;
+          return next(err);
         }
-
-        if (req.verifyUser == true && req.verifyAdmin == true) {
-          if (!event) {
-            err = new Error(`${req.params.artId} not found`);
-            err.status = 404;
-            return next(err);
-          }
-          if (req.body.artId == null) {
-            err = new Error(`${req.body.artId} not found`);
-            err.status = 404;
-            return next(err);
-          }
-        } else if (event && event.artId == req.body.artId) {
-          event = req.body;
-
-          event
-            .save()
-            .then((event) => {
-              res.statusCode = 200;
-              res.setHeader("Content-Type", "application/json");
-              res.json(event);
-            })
-            .catch((err) => next(err));
+        if (req.body.artId == null) {
+          err = new Error(`${req.body.artId} not found`);
+          err.status = 404;
+          return next(err);
         }
+      } 
+      else if (event && event.artId == req.body.artId) {
+        event.featured = req.body.featured;
+
+        event
+          .save()
+          .then((event) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(event);
+          })
+          .catch((err) => next(err));
+      }
+    })
+    .catch((err) => next(err));
+})
+.delete(
+  cors.corsWithOptions,
+  authenticate.verifyUser,
+  authenticate.verifyAdmin,
+  (req, res, next) => {
+    EventType.findByIdAndDelete(req.params.artId)
+      .then((response) => {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(response);
       })
       .catch((err) => next(err));
-  })
-  .delete(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `DELETE operation not supported on /events/arts/${req.params.artId}`
-      );
-    }
-  );
+  }
+);
 
 eventsRouter
   .route("/music")
   .options(cors.corsWithOptions, (req, res) => res.sendStatus(200))
   .get(cors.cors, (req, res, next) => {
-    console.log("das music");
     EventType.find()
       .then((events) => {
         let music = events.filter(function (x) {
@@ -282,17 +303,59 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `POST operation not supported on /events/music/${req.params.musicId}`
-      );
-    }
-  )
+  .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    EventType.findByIdAndUpdate(req.params.musicId)
+    .then((event) => {
+      if (req.verifyAdmin == true) {
+        if (!event) {
+          err = new Error(`${req.params.musicId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+        if (req.body.artId == null) {
+          err = new Error(`${req.body.musicId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+      } 
+      else if (event && event.musicId == req.body.musicId) {
+        if (req.body.name) {
+          event.name = req.body.name;
+        }
+        if (req.body.image) {
+          event.image = req.body.image;
+        }
+        if (req.body.date) {
+          event.date = req.body.date;
+        }
+        if (req.body.time) {
+          event.time = req.body.time;
+        }
+        if (req.body.fragment) {
+          event.fragment = req.body.fragment;
+        }
+        if (req.body.url) {
+          event.url = req.body.url;
+        }
+        if (req.body.featured != null) {
+          event.featured = req.body.featured;
+        }
+        if (req.body.eventType) {
+          event.eventType = req.body.eventType;
+        }
+
+        event
+          .save()
+          .then((event) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(event);
+          })
+          .catch((err) => next(err));
+      }
+    })
+    .catch((err) => next(err));
+})
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     EventType.findByIdAndUpdate(req.params.musicId)
       .then((event) => {
@@ -326,11 +389,14 @@ eventsRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `DELETE operation not supported on /events/arts/${req.params.musicId}`
-      );
+    (req, res, next) => {
+      EventType.findByIdAndDelete(req.params.musicId)
+        .then((response) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(response);
+        })
+        .catch((err) => next(err));
     }
   );
 
@@ -408,17 +474,59 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `POST operation not supported on /events/sport/${req.params.sportId}`
-      );
-    }
-  )
+  .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    EventType.findByIdAndUpdate(req.params.sportId)
+    .then((event) => {
+      if (req.verifyAdmin == true) {
+        if (!event) {
+          err = new Error(`${req.params.sportId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+        if (req.body.artId == null) {
+          err = new Error(`${req.body.sportId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+      } 
+      else if (event && event.sportId == req.body.sportId) {
+        if (req.body.name) {
+          event.name = req.body.name;
+        }
+        if (req.body.image) {
+          event.image = req.body.image;
+        }
+        if (req.body.date) {
+          event.date = req.body.date;
+        }
+        if (req.body.time) {
+          event.time = req.body.time;
+        }
+        if (req.body.fragment) {
+          event.fragment = req.body.fragment;
+        }
+        if (req.body.url) {
+          event.url = req.body.url;
+        }
+        if (req.body.featured != null) {
+          event.featured = req.body.featured;
+        }
+        if (req.body.eventType) {
+          event.eventType = req.body.eventType;
+        }
+
+        event
+          .save()
+          .then((event) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(event);
+          })
+          .catch((err) => next(err));
+      }
+    })
+    .catch((err) => next(err));
+})
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     EventType.findByIdAndUpdate(req.params.sportId)
       .then((event) => {
@@ -452,11 +560,14 @@ eventsRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `DELETE operation not supported on /events/arts/${req.params.sportId}`
-      );
+    (req, res, next) => {
+      EventType.findByIdAndDelete(req.params.sportId)
+        .then((response) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(response);
+        })
+        .catch((err) => next(err));
     }
   );
 
@@ -533,17 +644,59 @@ eventsRouter
       })
       .catch((err) => next(err));
   })
-  .post(
-    cors.corsWithOptions,
-    authenticate.verifyUser,
-    authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `POST operation not supported on /events/volunteer/${req.params.volunteerId}`
-      );
-    }
-  )
+  .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    EventType.findByIdAndUpdate(req.params.volunteerId)
+    .then((event) => {
+      if (req.verifyAdmin == true) {
+        if (!event) {
+          err = new Error(`${req.params.volunteerId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+        if (req.body.artId == null) {
+          err = new Error(`${req.body.volunteerId} not found`);
+          err.status = 404;
+          return next(err);
+        }
+      } 
+      else if (event && event.volunteerId == req.body.volunteerId) {
+        if (req.body.name) {
+          event.name = req.body.name;
+        }
+        if (req.body.image) {
+          event.image = req.body.image;
+        }
+        if (req.body.date) {
+          event.date = req.body.date;
+        }
+        if (req.body.time) {
+          event.time = req.body.time;
+        }
+        if (req.body.fragment) {
+          event.fragment = req.body.fragment;
+        }
+        if (req.body.url) {
+          event.url = req.body.url;
+        }
+        if (req.body.featured != null) {
+          event.featured = req.body.featured;
+        }
+        if (req.body.eventType) {
+          event.eventType = req.body.eventType;
+        }
+
+        event
+          .save()
+          .then((event) => {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(event);
+          })
+          .catch((err) => next(err));
+      }
+    })
+    .catch((err) => next(err));
+})
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     EventType.findByIdAndUpdate(req.params.volunteerId)
       .then((event) => {
@@ -577,11 +730,14 @@ eventsRouter
     cors.corsWithOptions,
     authenticate.verifyUser,
     authenticate.verifyAdmin,
-    (req, res) => {
-      res.statusCode = 403;
-      res.end(
-        `DELETE operation not supported on /events/arts/${req.params.volunteerId}`
-      );
+    (req, res, next) => {
+      EventType.findByIdAndDelete(req.params.volunteerId)
+        .then((response) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(response);
+        })
+        .catch((err) => next(err));
     }
   );
 

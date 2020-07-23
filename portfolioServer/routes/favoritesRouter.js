@@ -1,6 +1,5 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const Favorite = require("../models/favorites");
 const EventType = require("../models/eventTypes");
 const { response } = require("express");
 const authenticate = require("../authenticate");
@@ -18,22 +17,17 @@ favoritesRouter
       .then((events) => {
         let favorites = events.filter(function (x) {
           if (x.featured == true) {
-            return (x.name, x.time, x.fragment, x.url, x.featured);
+            return x;
           }
         });
-        var myquery = { _id: { $in: favorites } };
-        Favorite.create(myquery)
-          .then((events) => {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json(events);
-          })
-          .catch((err) => next(err));
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(favorites);
       })
       .catch((err) => next(err));
-  })
+  })      
   .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
-    Favorite.create(req.body)
+    EventType.create(req.body)
       .then((event) => {
         console.log("Event Created:", event);
         res.statusCode = 200;
